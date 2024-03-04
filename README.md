@@ -1,6 +1,7 @@
 # AngularGameOfThronesHouses
 
 ## Overview
+Updated to angular 17
 Angular Game of Thrones: Houses 
 
 ### Built with
