@@ -1,4 +1,4 @@
-import { Component, ElementRef, Renderer2 } from '@angular/core';
+import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { faDungeon } from '@fortawesome/free-solid-svg-icons';
 import { faMountainSun } from '@fortawesome/free-solid-svg-icons';
@@ -7,14 +7,15 @@ import { faQuoteRight } from '@fortawesome/free-solid-svg-icons';
 import { faQuoteLeft } from '@fortawesome/free-solid-svg-icons';
 import { faSun } from '@fortawesome/free-solid-svg-icons';
 import { faMoon } from '@fortawesome/free-solid-svg-icons';
-import { Observable, finalize, tap } from 'rxjs';
+import { Observable, finalize } from 'rxjs';
+import { DOCUMENT } from '@angular/common';
 
-type houseName = { 
-  name: string
-  houseName:string;
-  region:string;
-  coatOfArms:string;
-  words:string; 
+type House = {
+  name: string;
+  houseName: string;
+  region: string;
+  coatOfArms: string;
+  words: string;
 };
 
 @Component({
@@ -25,17 +26,14 @@ type houseName = {
 export class AppComponent {
   title = 'angular-game-of-thrones-houses';
 
-  houseNames: Array<houseName> = [];
+  houses: Array<House> = [];
   loading: boolean = false;
   light: boolean = false;
   selected: boolean = false;
   fadeAway: boolean = false;
 
-  selectedHouse: any;
-  houseName:string = '';
-  region:string = '';
-  coatOfArms:string = '';
-  words:string = '';
+  selectedHouse: House | null = null;
+  printedHouse: House | null = null;
 
   faDungeon = faDungeon;
   faMountainSun = faMountainSun;
@@ -47,58 +45,40 @@ export class AppComponent {
 
   constructor(
     private _http: HttpClient,
-    private render: Renderer2,
-    private element: ElementRef
+    @Inject(DOCUMENT) private document: Document
   ) {}
 
   ngOnInit() {
     this.fetchData()
       .pipe(
-        tap((data: any) => console.log(data)),
         finalize(() => {
           this.loading = false;
         })
       )
-      .subscribe(
-        (houseNames: Array<houseName>) => (this.houseNames = houseNames)
-      );
+      .subscribe((houses: Array<House>) => (this.houses = houses));
   }
 
-  fetchData(): Observable<Array<houseName>> {
+  private fetchData(): Observable<Array<House>> {
     this.loading = true;
-    return this._http.get<Array<houseName>>(
-      'https://www.anapioficeandfire.com/api/houses/'
+    return this._http.get<Array<House>>(
+      'https://www.anapioficeandfire.com/api/houses'
     );
-  }
-
-  onChosenHouse() {
-    this.selectedHouse = this.houseNames
   }
 
   getHouse() {
     this.fadeAway = true;
     setTimeout(() => {
-      this.houseName = '';
-      this.region = '';
-      this.coatOfArms = '';
-      this.words = '';
+      this.selected = false;
     }, 900);
     setTimeout(() => {
-      this.selected = false;
-      this.fadeAway = false;
       this.selected = true;
-      this.houseName = this.selectedHouse.name;
-      this.region = this.selectedHouse.region;
-      this.coatOfArms = this.selectedHouse.coatOfArms;
-      this.words = this.selectedHouse.words;
+      this.fadeAway = false;
+      this.printedHouse = this.selectedHouse;
     }, 1000);
   }
 
   toggleTheme() {
     this.light = !this.light;
-    this.render.addClass(
-      this.element.nativeElement.ownerDocument.body,
-      'light'
-    );
+    this.document.body.classList.toggle('light');
   }
 }

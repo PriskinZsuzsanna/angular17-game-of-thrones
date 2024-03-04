@@ -1,10 +1,10 @@
 <div class="container">
-  <div class="light-dark">
+  <div class="light-dark"(click)="toggleTheme()">
     @if (!light) {
-      <fa-icon [icon]="faSun" (click)="toggleTheme()"></fa-icon>
+      <fa-icon [icon]="faSun"></fa-icon>
     }
     @if (light) {
-      <fa-icon [icon]="faMoon" (click)="toggleTheme()"></fa-icon>
+      <fa-icon [icon]="faMoon"></fa-icon>
     }
   </div>
 
@@ -13,9 +13,11 @@
   </header>
 
   <div class="buttons">
-    @for (house of houseNames; track house) {
-      <app-button [houseName]=house.name (choosenHouse)="selectedHouse = house"
-        (getHouse)="(getHouse())">
+    @for (house of houses; track house) {
+      <app-button 
+        [houseName]=house.name 
+        (choosenHouse)="selectedHouse = house"
+        (getHouse)="getHouse()">
       </app-button>
     }
   </div>
@@ -23,24 +25,24 @@
 
   <div class="result">
     @if (!selected) {
-      <div class="img-div" [class.fade-away]="fadeAway">
-        <img src="assets/images.jpg" alt="">
+      <div class="img-container" [class.fade-away]="fadeAway">
+        <img src="assets/images.jpg" alt="Game of Thrones Wolf Image">
       </div>
     }
 
     @if (selected) {
       <div class="house-details" [class.fade-away]="fadeAway">
-        @if (houseName) {
-          <p class="detail"><fa-icon [icon]="faDungeon"></fa-icon>House: <span>{{houseName}}</span></p>
+        @if (printedHouse!.name) {
+          <p class="detail"><fa-icon [icon]="faDungeon"></fa-icon>House: <span>{{ printedHouse!.name }}</span></p>
         }
-        @if (region) {
-          <p><fa-icon [icon]="faMountainSun"></fa-icon>Region: <span>{{region}}</span></p>
+        @if (printedHouse!.region) {
+          <p><fa-icon [icon]="faMountainSun"></fa-icon>Region: <span>{{ printedHouse!.region }}</span></p>
         }
-        @if (coatOfArms) {
-          <p><fa-icon [icon]="faShield"></fa-icon> Coat of Arms: <span>{{coatOfArms}}</span></p>
+        @if (printedHouse!.coatOfArms) {
+          <p><fa-icon [icon]="faShield"></fa-icon> Coat of Arms: <span>{{ printedHouse!.coatOfArms }}</span></p>
         }
-        @if (words) {
-          <p><fa-icon [icon]="faQuoteRight"></fa-icon> Words: <span>{{words}}</span><fa-icon [icon]="faQuoteRight"></fa-icon></p>
+        @if (printedHouse!.words) {
+          <p><fa-icon [icon]="faQuoteRight"></fa-icon> Words: <span>{{ printedHouse!.words }}</span><fa-icon [icon]="faQuoteRight"></fa-icon></p>
         }
       </div>
     }
